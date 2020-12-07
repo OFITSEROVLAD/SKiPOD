@@ -39,40 +39,45 @@ int main(int an, char **as)
 
     timerOpenMp_end = omp_get_wtime();
 
-    printf("(base) Threads: %d N: %d  Time: %10f   \n\n", omp_get_num_threads() , N, timerOpenMp_end  - timerOpenMp_start);
+    printf("(indices_ifInit_relax) Threads: %d  N:  %d  Time: %10f   \n\n", omp_get_num_threads() , N, timerOpenMp_end  - timerOpenMp_start);
 
     return 0;
 }
 
 void init()
 { 
-    for(j=0; j<=N-1; j++)
-    for(i=0; i<=N-1; i++)
+    #pragma omp parallel for default(shared) private(i, j) 
+    for(i=1; i<N-1; i++)
+    for(j=1; j<N-1; j++)
     {
-        if(i==0 || i==N-1 || j==0 || j==N-1) A[i][j]= 0.;
-        else A[i][j]= ( 1. + i + j) ;
+        A[i][j]= ( 1. + i + j) ;
     }
 } 
 
 void relax()
 {
-
-    for(j=1; j<=N-2; j++)
-    for(i=1; i<=N-2; i++)
-    if ((i + j) % 2 == 1)
+    #pragma omp parallel  private(i, j)  reduction(max:eps)
     {
-        double b;
-        b = w*((A[i-1][j]+A[i+1][j]+A[i][j-1]+A[i][j+1])/4. - A[i][j]);
-        eps =  Max(fabs(b),eps);
-        A[i][j] = A[i][j] + b;
+        #pragma omp for
+        for(i=1; i<=N-2; i++)
+        for(j=1 + i%2; j<=N-2; j += 2)
+        {
+            double b;
+            b = w*((A[i-1][j]+A[i+1][j]+A[i][j-1]+A[i][j+1])/4. - A[i][j]);
+            eps =  Max(fabs(b),eps);
+            A[i][j] = A[i][j] + b;
+        }
     }
-    for(j=1; j<=N-2; j++)
-    for(i=1; i<=N-2; i++)
-    if ((i + j) % 2 == 0)
+    #pragma omp parallel private(i, j)
     {
-        double b;
-        b = w*((A[i-1][j]+A[i+1][j]+A[i][j-1]+A[i][j+1])/4. - A[i][j]);
-        A[i][j] = A[i][j] + b;
+        #pragma omp for
+        for(i=1; i<=N-2; i++)
+        for(j=1+(i+1)%2; j<=N-2; j += 2)
+        {
+            double b;
+            b = w*((A[i-1][j]+A[i+1][j]+A[i][j-1]+A[i][j+1])/4. - A[i][j]);
+            A[i][j] = A[i][j] + b;
+        }
     }
 }
 
@@ -81,8 +86,9 @@ void verify()
     double s;
 
     s=0.;
-    for(j=0; j<=N-1; j++)
+    #pragma omp parallel for default(shared) private(i, j) reduction(+:s) 
     for(i=0; i<=N-1; i++)
+    for(j=0; j<=N-1; j++)
     {
         s=s+A[i][j]*(i+1)*(j+1)/(N*N);
     }
