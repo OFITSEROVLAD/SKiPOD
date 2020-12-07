@@ -1,0 +1,2 @@
+# SKiPOD
+CS MSU course
