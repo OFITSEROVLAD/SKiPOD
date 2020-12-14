@@ -45,18 +45,22 @@ CS MSU course
 Работа задачи рассмотрена на суперкомпьютере Polus с различным числом нитей(1...160) для OpenMP/различном числе ядер(1...64) для MPI и различными размерами матрицы (514...8194). Каждое измерение проводилось 3 раза. Явные выбросы не учитывались, брался средний результат среди оставшихся.
 
 ### Таблица OpenMP 
-#ToDO
-### Таблица MPI 
-#ToDO
-  
+![2dOpenMP](https://user-images.githubusercontent.com/56963957/102071642-d42cbd00-3e11-11eb-8c40-55706d54dfb6.png)
 
+### Таблица MPI 
+![2dMPI](https://user-images.githubusercontent.com/56963957/102071640-d42cbd00-3e11-11eb-9787-ccb782f24ec3.png)
+  
 ### 3D график OpenMP 
-#ToDO
+
+![3dOpenMP](https://user-images.githubusercontent.com/56963957/102071637-d3942680-3e11-11eb-8bc4-cd9c7720c325.png)
+
 ### 3D график MPI 
-#ToDO
+
+![3dMPI](https://user-images.githubusercontent.com/56963957/102071634-d2fb9000-3e11-11eb-9e7a-45e3dee5deba.png)
 
 ### Сравнение OpenMP и MPI при N = 8194 
-#ToDO
+
+![OpenMP vs MPI ](https://user-images.githubusercontent.com/56963957/102071629-d131cc80-3e11-11eb-978e-3ec690630750.png)
 
  
  
